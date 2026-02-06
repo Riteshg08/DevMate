@@ -1,0 +1,20 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "Devtinder Project",
+  "keywords": [
+    "Node",
+    "Devtinder"
+  ],
+  "license": "ISC",
+  "author": "Ritesh",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start" : "node src/App.js",
+    "dev" : "nodemon src/App.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
