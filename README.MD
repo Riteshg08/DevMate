@@ -22,3 +22,7 @@ If the database is not connected, those requests may fail, so the database conne
 -The server authenticates the credentials.
 -A database connection is established.
 -A response is sent back to the application.
+
+<!-- To add new Field  -->
+It is not possible to add new field that is not define in the schemas
+-> To add we have to add {stict:false} in the schemas which allows us to add new field 
