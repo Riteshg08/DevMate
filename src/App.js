@@ -20,7 +20,7 @@ app.post("/signup", async (req, res) => {
     //     gender: "Male",
     //     password: "virat123"
     // });
-
+  
     //pushing a dynamic data given by the client in the request body to the user model
     const user = new User(req.body);
 
@@ -30,7 +30,7 @@ app.post("/signup", async (req, res) => {
         res.send("User is Added successfully!");
     }
    catch(err){
-        res.status(400).send("Something went wrong!!");
+        res.status(400).send("Error:"+err.message);
     }
 });
 
@@ -109,7 +109,7 @@ app.patch("/user",async(req,res) =>{
     const userId = req.body.userId;
     const data = req.body;
     try{
-        const user = await User.findByIdAndUpdate(userId,data,{returnDocument:"after"});
+        const user = await User.findByIdAndUpdate(userId,data,{returnDocument:"after",runValidators:true});
         if(!user){
             res.status(404).send("User not found");
         }
@@ -118,27 +118,27 @@ app.patch("/user",async(req,res) =>{
         }
     }
     catch(err){
-        res.status(400).send("Something went wrong!!");
+        res.status(400).send("Error:"+err.message);
     }
 });
 
-//it can handle all email,id,gender etc
-app.patch("/user",async(req,res) =>{
-    const userEmail = req.body.email;
-    const data = req.body;
-    try{
-        const user = await User.findOneAndUpdate({ email: userEmail }, data, { returnDocument: "after" });
-        if(!user){
-            res.status(404).send("User not found");
-        }
-        else{
-            res.send(user);
-        }
-    }
-    catch(err){
-        res.status(400).send("Something went wrong!!");
-    }
-});
+//--it can handle all email,id,gender etc
+// app.patch("/user",async(req,res) =>{
+//     const userEmail = req.body.email;
+//     const data = req.body;
+//     try{
+//         const user = await User.findOneAndUpdate({ email: userEmail }, data, { returnDocument: "after" });
+//         if(!user){
+//             res.status(404).send("User not found");
+//         }
+//         else{
+//             res.send(user);
+//         }
+//     }
+//     catch(err){
+//         res.status(400).send("Something went wrong!!");
+//     }
+// });
 
 
 connectDB()

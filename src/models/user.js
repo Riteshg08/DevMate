@@ -2,24 +2,47 @@
 
  const userSchema = new mongoose.Schema({
        firstName:{
-            type:String
+            type:String,
+            minLength: 3,
+            maxLength: 20,
+            required: true
        },
        lastName: {
-            type: String
+            type: String,
+            minLength: 3,
+            maxLength: 20
        },
        email:{
-            type: String
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true
        },
        age: {
-            type: Number
+            type: Number,
+            min: 18
        },
        gender:{
-            type: String
+            type: String,
+            validate(value){
+               if(!["male","female","other"].includes(value.toLowerCase())){
+                     throw new Error("Invalid gender value!");
+               }
+            }
        },
        password: {
-             type: String
+             type: String,
+             required: true
+       },
+       skills: {
+          type: [String]
+       },
+       about: {
+          type: String,
+          default: "I'am xyz. I am a software developer with 5 years of experience in web development. I have worked on various projects and have a strong background in JavaScript, Node.js, and MongoDB."
        }
- });
+ },{timestamps: true});
 
 //Creating a model User using userSchema and it is used to interact with the users collection in the database
 //The users collection is created automatically by the mongodb when we insert data into it for the first time
