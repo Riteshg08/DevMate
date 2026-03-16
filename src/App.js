@@ -24,6 +24,17 @@ app.post("/signup", async (req, res) => {
     //pushing a dynamic data given by the client in the request body to the user model
     const user = new User(req.body);
 
+    //Validating emailID
+    const emailIdExists = await User.findOne({email: user.email});
+    if(emailIdExists){
+        res.status(400).send("User with this email already exists!!");
+    }
+
+    //data sanitization
+    user.firstName = user.firstName.trim();
+    user.lastName = user.lastName.trim();
+    user.email = user.email.trim().toLowerCase();
+
     //saving the user to the database
     try {
         await user.save();
@@ -105,10 +116,22 @@ app.delete("/user",async(req,res) =>{
 });
 
 //Update the existing user in the database with the given user id and new data
-app.patch("/user",async(req,res) =>{
-    const userId = req.body.userId;
+app.patch("/user/:userId",async(req,res) =>{
+    const userId = req.params?.userId;
     const data = req.body;
     try{
+        //we want to allow only certain fields to be updated and we want to validate the updates before updating the user in the database
+        const allowedUpdates = ["gender","age","about","skills"];
+        const canUpdate = Object.keys(data).every((key) => allowedUpdates.includes(key));
+        if(!canUpdate){
+             res.status(400).send("Invalid updates!!");
+        }
+
+        if(data.skills.length > 10){
+            res.status(400).send("You can add maximum 10 skills!!");
+        }
+
+
         const user = await User.findByIdAndUpdate(userId,data,{returnDocument:"after",runValidators:true});
         if(!user){
             res.status(404).send("User not found");

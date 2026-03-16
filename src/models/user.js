@@ -1,11 +1,13 @@
  const mongoose = require('mongoose');
+ const validator = require("validator");
 
  const userSchema = new mongoose.Schema({
        firstName:{
             type:String,
             minLength: 3,
             maxLength: 20,
-            required: true
+            required: true,
+          //   trim: true
        },
        lastName: {
             type: String,
@@ -16,12 +18,23 @@
             type: String,
             required: true,
             unique: true,
-            lowercase: true,
-            trim: true
+            trim: true,
+          //   validate(value){
+          //      if(!value.includes("@gmail.com")){
+          //           throw new Error("Email must be a valid Gmail address!");
+          //      }
+          //   }
+            
+          validate(value){
+               if(validator.isEmail(value) || validator.isLowercase(value)){
+                    throw new Error("Email must be a valid email address!");
+               }
+          }
        },
        age: {
             type: Number,
-            min: 18
+            min: 18,
+            max: 120
        },
        gender:{
             type: String,
@@ -33,7 +46,12 @@
        },
        password: {
              type: String,
-             required: true
+             required: true,
+             validate(value){
+                  if(!validator.isStrongPassword(value)){
+                    throw new Error("Enter a strong password!!");
+                  }
+             }
        },
        skills: {
           type: [String]
