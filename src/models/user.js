@@ -78,7 +78,7 @@ userSchema.methods.comparePasswords = async function (passwordInput) {
 
      const isPasswordMatch = await bcrypt.compare(passwordInput, user.password);
      return isPasswordMatch;
-}
+} 
 
 
 //Creating a model User using userSchema and it is used to interact with the users collection in the database
