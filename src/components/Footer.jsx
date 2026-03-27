@@ -1,6 +1,6 @@
 const Footer = () => {
     return (
-        <footer className="footer sm:footer-horizontal bg-base-300 text-neutral-content items-center p-4 px-5 absolute bottom-0">
+        <footer className="footer sm:footer-horizontal bg-base-300 text-neutral-content items-center p-4 px-5">
             <aside className="grid-flow-col items-center">
                 <p>Copyright © {new Date().getFullYear()} - All right reserved</p>
             </aside>

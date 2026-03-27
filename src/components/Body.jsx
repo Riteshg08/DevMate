@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 import { useNavigate } from "react-router-dom";
-import  axios from "axios";
+import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 
 const Body = () => {
@@ -31,9 +31,13 @@ const Body = () => {
     }, []);
 
     return (
-        <div>
+        <div className="min-h-screen flex flex-col">
             <Navbar />
-            <Outlet />
+
+            <div className="grow">
+                <Outlet />
+            </div>
+
             <Footer />
         </div>
     );

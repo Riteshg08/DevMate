@@ -27,7 +27,7 @@ const Feed = () => {
         getFeed();
     }, [])
     return feed && feed.length > 0 && (
-        <div className="flex justify-center my-28 ">
+        <div className="flex flex-wrap justify-center gap-6 mt-10 px-4">
             <UserCard user={feed[0]}></UserCard>
         </div>
     );

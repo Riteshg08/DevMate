@@ -2,7 +2,7 @@ const UserCard = ({ user }) => {
     if (!user) return null; 
     const { firstName, lastName, age, gender, about } = user;
     return (
-        <div className="card bg-base-300 w-96 shadow-sm">
+        <div className="card bg-base-300 w-full sm:w-80 md:w-96 shadow-lg">
             <figure>
                 <img
                     src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
