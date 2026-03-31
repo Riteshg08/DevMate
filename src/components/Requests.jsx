@@ -3,10 +3,24 @@ import { addRequests } from "../utils/requestSlice";
 import { useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
+import { removeRequest } from "../utils/requestSlice";
 
 const Requests = () => {
     const requests = useSelector((state) => state.request);
     const dispatch = useDispatch();
+
+    const reviewRequest = async (status, _id) => {
+        console.log("Button clicked with status:", status, "and request ID:", _id);
+        try {
+            const res = await axios.post(BASE_URL + "/request/review/" + status + "/" + _id, {}, {
+                withCredentials: true
+            });
+            dispatch(removeRequest(_id));
+        }
+        catch (err) {
+            console.error(err.response?.data || err.message);
+        }
+    }
 
     const fetchRequest = async () => {
         try {
@@ -63,8 +77,12 @@ const Requests = () => {
                         </div>
 
                         <div className="card-actions justify-between py-1">
-                            <button className="btn bg-green-500 text-white border-none">Accept</button>
-                            <button className="btn bg-red-500 text-white border-none">Reject</button>
+                            <button className="btn bg-green-500 text-white border-none" onClick={() => reviewRequest("accepted", req._id)}>
+                                Accept
+                            </button>
+                            <button className="btn bg-red-500 text-white border-none" onClick={() => reviewRequest("rejected", req._id)}>
+                                Reject
+                            </button>
                         </div>
                     </div>
                 );
