@@ -21,6 +21,7 @@ const Connections = () => {
         }
     };
 
+
     useEffect(() => {
         fetchConnections();
     }, []);
@@ -35,7 +36,7 @@ const Connections = () => {
                 <div
                     key={conn._id}
                     className="flex items-center gap-4 p-4 border rounded-2xl shadow-md hover:shadow-lg transition duration-300 bg-white w-5xl cursor-pointer my-3">
-                    <div className="w-16 h-16 flex-shrink-0">
+                    <div className="w-16 h-16 shrink-0">
                         <img
                             alt="photo"
                             src={conn.photoUrl}
