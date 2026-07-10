@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/constants";
 import axios from "axios";
 import AccountStep from "../components/onboarding/AccountStep";
 import RoleStep from "../components/onboarding/RoleStep";
@@ -11,13 +12,15 @@ const Signup = () => {
   // This is the ONE place that holds all the data collected
   // across all three steps. Each step just reads/writes into this.
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName:"",
     email: "",
     password: "",
     title: "",
     skills: []
   });
-
+  console.log("FirstName: ",formData.firstName);
+  console.log("LastName: ",formData.lastName);
   const [step, setStep] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -29,6 +32,7 @@ const Signup = () => {
       [field]: value
     });
   };
+  console.log("FormData: ",formData);
 
   const goNext = () => {
     setStep(step + 1);
@@ -39,21 +43,15 @@ const Signup = () => {
   };
 
   const handleSubmit = async () => {
+    console.log("Signup");
     try {
       setErrorMessage("");
-
-      // Your backend needs firstName and lastName separately,
-      // but our form only collects one "Full Name" field.
-      // Simple beginner-friendly way to split it:
-      const nameParts = formData.fullName.trim().split(" ");
-      const firstName = nameParts[0];
-      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "User";
-
+      console.log("Signup");
       const response = await axios.post(
-        "http://localhost:7777/signup",
+        BASE_URL + "/signup",
         {
-          firstName,
-          lastName,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
           title: formData.title,
@@ -63,7 +61,8 @@ const Signup = () => {
           withCredentials: true // needed so the login cookie gets saved
         }
       );
-
+       console.log(firstName);
+       console.log(lastName);
       navigate("/feed");
     } catch (err) {
       // axios puts the backend's error message in err.response.data

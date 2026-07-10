@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { BASE_URL } from '../utils/constants';
 import {
     Home, Search, Users, UserPlus, MessageCircle, Bell, TrendingUp, Settings
 } from 'lucide-react';
@@ -9,21 +11,51 @@ function Sidebar() {
     const location = useLocation();
     const user = useSelector((store) => store.user);
 
-    // list of nav links - easy to add more later, just add an object here
+    // real counts, fetched from the backend
+    const [unreadNotifications, setUnreadNotifications] = useState(0);
+    const [pendingRequests, setPendingRequests] = useState(0);
+
+    const fetchCounts = async () => {
+        try {
+            const notifRes = await axios.get(BASE_URL + "/user/notifications", {
+                withCredentials: true
+            });
+            const notifications = notifRes?.data?.data || [];
+            const unreadCount = notifications.filter((n) => !n.isRead).length;
+            setUnreadNotifications(unreadCount);
+        } catch (err) {
+            console.error(err);
+        }
+
+        try {
+            const reqRes = await axios.get(BASE_URL + "/user/request/received", {
+                withCredentials: true
+            });
+            const requests = reqRes?.data?.data || [];
+            setPendingRequests(requests.length);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    useEffect(() => {
+        fetchCounts();
+    }, []);
+
+    // nav links - badge is now a number or 0 (0 means no badge shown)
     const navLinks = [
         { name: "Feed", path: "/feed", icon: Home },
         { name: "Search", path: "/search", icon: Search },
         { name: "Connections", path: "/connections", icon: Users },
-        { name: "Requests", path: "/requests", icon: UserPlus },
-        { name: "Messages", path: "/messages", icon: MessageCircle},
-        { name: "Notifications", path: "/notifications", icon: Bell },
+        { name: "Requests", path: "/requests", icon: UserPlus, badge: pendingRequests },
+        { name: "Messages", path: "/messages", icon: MessageCircle, badge: 3 },
+        { name: "Notifications", path: "/notifications", icon: Bell, badge: unreadNotifications },
         { name: "Dashboard", path: "/dashboard", icon: TrendingUp },
     ];
 
     return (
         <div className="bg-[#0B1020] flex flex-col text-white w-[280px] h-screen">
 
-            {/* Logo */}
             <div className="flex items-center gap-3 m-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
                     {"</>"}
@@ -35,7 +67,6 @@ function Sidebar() {
 
             <hr className="text-gray-600" />
 
-            {/* Nav links */}
             <div className="flex flex-col p-5 gap-1">
                 {navLinks.map((link) => {
                     const Icon = link.icon;
@@ -55,7 +86,7 @@ function Sidebar() {
                                 <span>{link.name}</span>
                             </div>
 
-                            {link.badge && (
+                            {link.badge > 0 && (
                                 <span className="bg-indigo-500 text-xs rounded-full px-2 py-0.5">
                                     {link.badge}
                                 </span>
@@ -65,7 +96,6 @@ function Sidebar() {
                 })}
             </div>
 
-            {/* pushes settings/user section to the bottom */}
             <div className="mt-auto">
                 <hr className="text-gray-600" />
 

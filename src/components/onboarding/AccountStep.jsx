@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import ProgressBar from "./ProgressBar";
 
-const AccountStep = ({ next }) => {
+const AccountStep = ({ formData, updateFormData, next }) => {
+  
+
   return (
     <div className="min-h-screen bg-[#0B1020] flex flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
       {/* Logo */}
@@ -9,7 +11,7 @@ const AccountStep = ({ next }) => {
         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
           {"</>"}
         </div>
-       <h1 className="text-xl sm:text-2xl font-bold text-white">
+        <h1 className="text-xl sm:text-2xl font-bold text-white">
           DevTinder
         </h1>
       </div>
@@ -43,11 +45,19 @@ const AccountStep = ({ next }) => {
         </div>
 
         {/* Full Name */}
-        <div className="mb-3">
-          <label className="block text-gray-300 mb-1">
-            Full Name
-          </label>
-          <input type="text" placeholder="Jordan Lee" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-sm sm:text-base text-white outline-none focus:border-violet-500"/>
+        <div className="mb-3 flex">
+          <div className="flex flex-col pr-10">
+            <label className="block text-gray-300 mb-1">
+              First Name
+            </label>
+            <input type="text" value={formData.firstName} onChange={(e)=> updateFormData("firstName",e.target.value)} placeholder="Jordan" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-sm sm:text-base text-white outline-none focus:border-violet-500" />
+          </div>
+          <div className="flex flex-col">
+            <label className="block text-gray-300 mb-1">
+              Last Name
+            </label>
+            <input type="text" value={formData.lasttName} onChange={(e)=> updateFormData("lastName",e.target.value)} placeholder="Lee" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-sm sm:text-base text-white outline-none focus:border-violet-500" />
+          </div>
         </div>
 
         {/* Email */}
@@ -55,7 +65,7 @@ const AccountStep = ({ next }) => {
           <label className="block text-gray-300 mb-1">
             Email
           </label>
-          <input type="email" placeholder="you@example.com" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500"/>
+          <input type="email" value={formData.email} onChange={(e)=> updateFormData("email",e.target.value)} placeholder="you@example.com" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500" />
         </div>
 
         {/* Password */}
@@ -63,7 +73,7 @@ const AccountStep = ({ next }) => {
           <label className="block text-gray-300 mb-1">
             Password
           </label>
-          <input type="password" placeholder="********" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500" />
+          <input type="password" value={formData.password} onChange={(e)=> updateFormData("password",e.target.value)} placeholder="********" className="w-full bg-[#0F172A] border border-gray-700 rounded-xl px-4 py-3 text-white outline-none focus:border-violet-500" />
         </div>
 
         {/* Continue Button */}

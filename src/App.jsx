@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Body from "./components/Body";
-import Profile from "./components/Profile";
+import Profile from "./pages/Profile";
 import Landing from "./pages/Landing";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
@@ -14,6 +14,7 @@ import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
+import Chat from "./pages/Chat";
 
 function App() {
 
@@ -32,6 +33,7 @@ function App() {
               <Route path="/requests" element={<Requests />} />
               <Route path="/search" element={<Search />} />
               <Route path="/messages" element={<Messages />} />
+              <Route path="/messages/:targetUserId" element={<Chat />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/settings" element={<Settings />} />
