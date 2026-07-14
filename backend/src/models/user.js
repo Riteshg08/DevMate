@@ -49,9 +49,10 @@ const userSchema = new mongoose.Schema({
      },
      password: {
           type: String,
-          required: true,
+          required: false,
           validate(value) {
-               if (!validator.isStrongPassword(value)) {
+               // only check strength if a password was actually set
+               if (value && !validator.isStrongPassword(value)) {
                     throw new Error("Enter a strong password!!");
                }
           }
@@ -59,10 +60,10 @@ const userSchema = new mongoose.Schema({
      skills: {
           type: [String]
      },
-     about: {
+     bio: {
           type: String,
-          default: "I'am xyz. I am a software developer with 5 years of experience in web development. I have worked on various projects and have a strong background in JavaScript, Node.js, and MongoDB.",
-          maxLength: 200
+          default: "It is just dummy bio",
+          maxLength: 100
      },
 
      // ---- job info fields ----
@@ -86,7 +87,10 @@ const userSchema = new mongoose.Schema({
      },
      experience: {
           type: Number
-     }
+     },
+     googleId: {
+          type: String
+     },
 
 }, { timestamps: true });
 

@@ -13,7 +13,7 @@ userRouter.get("/user/request/received", authUser, async (req, res) => {
         const connectionRequest = await ConnectionRequest.find({
             toUserId: loggedInUser._id,
             status: "interested"
-        }).populate("fromUserId", "firstName lastName age skills about photoUrl title company");
+        }).populate("fromUserId", "firstName lastName age skills bio photoUrl title company");
 
         res.json({
             message: "Data is fetched successfully",
@@ -34,7 +34,7 @@ userRouter.get("/user/request/sent", authUser, async (req, res) => {
         const connectionRequest = await ConnectionRequest.find({
             fromUserId: loggedInUser._id,
             status: "interested"
-        }).populate("toUserId", "firstName lastName age skills about photoUrl title company");
+        }).populate("toUserId", "firstName lastName age skills bio photoUrl title company");
 
         res.json({
             message: "Data is fetched successfully",
@@ -56,7 +56,7 @@ userRouter.get("/user/connections", authUser, async (req, res) => {
                 { toUserId: loggedInUser._id, status: "accepted" },
                 { fromUserId: loggedInUser._id, status: "accepted" }
             ]
-        }).populate("fromUserId", "firstName lastName age skills about photoUrl title company").populate("toUserId", "firstName lastName age skills about photoUrl title company");
+        }).populate("fromUserId", "firstName lastName age skills bio photoUrl title company").populate("toUserId", "firstName lastName age skills bio photoUrl title company");
 
         const data = connectionRequest.map((row) => {
             if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
@@ -74,6 +74,37 @@ userRouter.get("/user/connections", authUser, async (req, res) => {
         res.status(400).send("Error: " + err.message);
     }
 });
+
+// Search users by username, role/title, or skill
+userRouter.get("/user/search", authUser, async (req, res) => {
+    try {
+        const loggedInUser = req.user;
+        const query = req.query.q;
+
+        const filter = { _id: { $ne: loggedInUser._id } };
+
+        if (query && query.trim().length > 0) {
+            const searchText = query.trim();
+
+            // match if the search text appears in username, title, OR any skill
+            filter.$or = [
+                { username: { $regex: searchText, $options: "i" } },
+                { title: { $regex: searchText, $options: "i" } },
+                { skills: { $regex: searchText, $options: "i" } }
+            ];
+        }
+
+        const users = await User.find(filter)
+            .select("firstName lastName age skills about photoUrl title company location githubUsername portfolioUrl linkedinUrl username")
+            .limit(50);
+
+        res.json({ message: "Search results", data: users });
+    }
+    catch (err) {
+        res.status(400).send("Error: " + err.message);
+    }
+});
+
 
 userRouter.get("/feed", authUser, async (req, res) => {
     try {
@@ -106,7 +137,7 @@ userRouter.get("/feed", authUser, async (req, res) => {
                 { _id: { $ne: loggedInUser._id } }
             ]
         })
-            .select("firstName lastName age skills about photoUrl title company")
+            .select("firstName lastName age skills bio photoUrl title company location githubUsername portfolioUrl linkedinUrl")
             .skip(skipPages)
             .limit(limit);
 
@@ -116,6 +147,31 @@ userRouter.get("/feed", authUser, async (req, res) => {
         res.status(400).send("Error: " + err.message);
     }
 });
+
+// Remove an existing connection (unmatch)
+userRouter.delete("/user/connections/:targetUserId", authUser, async (req, res) => {
+    try {
+        const loggedInUser = req.user;
+        const targetUserId = req.params.targetUserId;
+
+        const connection = await ConnectionRequest.findOneAndDelete({
+            $or: [
+                { fromUserId: loggedInUser._id, toUserId: targetUserId, status: "accepted" },
+                { fromUserId: targetUserId, toUserId: loggedInUser._id, status: "accepted" }
+            ]
+        });
+
+        if (!connection) {
+            throw new Error("Connection not found");
+        }
+
+        res.json({ message: "Connection removed successfully" });
+    }
+    catch (err) {
+        res.status(400).send("Error: " + err.message);
+    }
+});
+
 
 module.exports = {
     userRouter

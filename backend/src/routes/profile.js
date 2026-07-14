@@ -58,6 +58,20 @@ profileRouter.patch("/profile/passwordUpdate", authUser, async (req, res) => {
     }
 });
 
+profileRouter.delete("/profile/delete", authUser, async (req, res) => {
+    try {
+        const loggedInUser = req.user;
+
+        await loggedInUser.deleteOne();
+
+        res.cookie("token", null, { expires: new Date(Date.now()) });
+        res.json({ message: "Account deleted successfully" });
+    }
+    catch (err) {
+        res.status(400).send("Error: " + err.message);
+    }
+});
+
 module.exports = {
     profileRouter
 }

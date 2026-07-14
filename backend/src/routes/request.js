@@ -114,6 +114,49 @@ requestRouter.post("/request/review/:status/:requestID", authUser, async (req, r
 
 });
 
+requestRouter.delete("/request/undo/:targetUserId", authUser, async (req, res) => {
+    try {
+        const fromUserId = req.user._id;
+        const toUserId = req.params.targetUserId;
+
+        const deleted = await connectionRequestModel.findOneAndDelete({
+            fromUserId,
+            toUserId,
+            status: { $in: ["interested", "ignored"] }
+        });
+
+        if (!deleted) {
+            throw new Error("No request found to undo");
+        }
+
+        res.json({ message: "Request undone successfully" });
+    }
+    catch (err) {
+        res.status(400).send("Error: " + err.message);
+    }
+});
+
+requestRouter.delete("/request/cancel/:targetUserId", authUser, async (req, res) => {
+    try {
+        const fromUserId = req.user._id;
+        const toUserId = req.params.targetUserId;
+
+        const deleted = await connectionRequestModel.findOneAndDelete({
+            fromUserId,
+            toUserId,
+            status: "interested"
+        });
+
+        if (!deleted) {
+            throw new Error("No pending request found to cancel");
+        }
+
+        res.json({ message: "Request cancelled successfully" });
+    }
+    catch (err) {
+        res.status(400).send("Error: " + err.message);
+    }
+});
 
 module.exports = {
     requestRouter

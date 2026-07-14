@@ -5,6 +5,11 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const cors = require("cors");
 const { Server } = require("socket.io");
+const dotenv = require("dotenv");
+dotenv.config();
+const session = require("express-session");
+const passport = require("./config/passport");
+const { googleAuthRouter } = require("./routes/googleAuth");
 
 const { profileRouter } = require('./routes/profile');
 const { requestRouter } = require('./routes/request');
@@ -12,6 +17,7 @@ const { authRouter } = require('./routes/auth');
 const { userRouter } = require('./routes/user');
 const { notificationRouter } = require("./routes/notification");
 const { messageRouter } = require('./routes/message');
+const { githubRouter } = require('./routes/github');
 const Message = require("./models/message");
 
 app.use(cors({
@@ -25,8 +31,17 @@ app.use('/', authRouter);
 app.use('/', profileRouter);
 app.use('/', requestRouter);
 app.use('/', userRouter);
-app.use('/',messageRouter);
+app.use('/', messageRouter);
 app.use('/', notificationRouter);
+app.use('/', githubRouter);
+
+app.use(session({
+    secret: "devtinder_session_secret",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use('/', googleAuthRouter);
 
 // create a plain http server from our express app, so socket.io can attach to it
 const server = http.createServer(app);
@@ -53,6 +68,16 @@ io.on("connection", (socket) => {
         const roomId = getRoomId(userId, targetUserId);
         socket.join(roomId);
         console.log(userId + " joined room " + roomId);
+    });
+
+    socket.on("typing", ({ userId, targetUserId }) => {
+        const roomId = getRoomId(userId, targetUserId);
+        socket.to(roomId).emit("userTyping", { userId });
+    });
+
+    socket.on("stopTyping", ({ userId, targetUserId }) => {
+        const roomId = getRoomId(userId, targetUserId);
+        socket.to(roomId).emit("userStoppedTyping", { userId });
     });
 
     // frontend will call this when sending a message
