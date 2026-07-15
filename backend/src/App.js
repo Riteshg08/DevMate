@@ -21,7 +21,7 @@ const { githubRouter } = require('./routes/github');
 const Message = require("./models/message");
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin:process.env.CLIENT_URL,
     credentials: true
 }));
 app.use(express.json());
